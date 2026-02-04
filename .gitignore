@@ -13,6 +13,9 @@ app/indexer/escrow.sqlite
 app/indexer/stats.json
 app/dashboard/stats.json
 
+# scripts that read secrets
+tmp_moltbook_*.mjs
+
 # OS
 .DS_Store
 Thumbs.db
