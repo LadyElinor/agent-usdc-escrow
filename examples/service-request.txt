@@ -1,0 +1,8 @@
+/service-request
+service: URL Summarizer
+input: https://example.com/article
+max_price_usdc: 5.00
+client_wallet: 0xClientAddress
+provider_wallet: 0xProviderAddress
+job_nonce: 12
+deadline_s: 86400

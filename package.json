@@ -1,0 +1,29 @@
+{
+  "name": "agent-usdc-escrow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:base": "hardhat run scripts/deploy-base-sepolia.js --network baseSepolia",
+    "bot:provider": "node app/bots/provider-bot.js",
+    "bot:client": "node app/bots/client-bot.js",
+    "bot:monitor": "node app/bots/monitor-bot.js",
+    "export:stats": "node app/indexer/export-stats.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "hardhat": "^2.28.4"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "ethers": "^6.16.0"
+  }
+}

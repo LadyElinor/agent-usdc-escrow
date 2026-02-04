@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent USDC Escrow — Marketplace Dashboard</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #0f1620;
+      --text: #e6edf3;
+      --muted: #93a4b5;
+      --line: #223043;
+      --good: #20c997;
+      --warn: #f59f00;
+      --bad: #fa5252;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+    html, body { background: var(--bg); color: var(--text); margin: 0; font-family: var(--sans); }
+    a { color: #7cc4ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 18px; }
+    .topbar { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .title { font-weight: 700; letter-spacing: .2px; }
+    .sub { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+
+    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 12px; margin-top: 14px; }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+    .card h2 { margin: 0 0 10px 0; font-size: 14px; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: .6px; }
+
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    @media (max-width: 980px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    .kpi { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: rgba(255,255,255,0.02); }
+    .kpi .label { color: var(--muted); font-size: 12px; }
+    .kpi .value { font-family: var(--mono); font-size: 18px; margin-top: 6px; }
+
+    table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-weight: 650; }
+    .muted { color: var(--muted); }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); font-family: var(--mono); font-size: 11px; }
+    .released { color: var(--good); border-color: rgba(32,201,151,.35); }
+    .accepted { color: var(--warn); border-color: rgba(245,159,0,.35); }
+    .completed { color: #74c0fc; border-color: rgba(116,192,252,.35); }
+    .refunded { color: var(--bad); border-color: rgba(250,82,82,.35); }
+    .pending { color: var(--muted); }
+
+    .cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn { display: inline-block; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,0.02); font-family: var(--mono); font-size: 12px; }
+    .btn:hover { background: rgba(255,255,255,0.04); }
+
+    .note { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .filebox { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="title">Agent USDC Escrow — Marketplace Dashboard</div>
+        <div class="sub" id="subline">loading…</div>
+      </div>
+      <div class="filebox">
+        <a class="btn" href="../indexer/stats.json" target="_blank" rel="noreferrer">Open stats.json</a>
+        <label class="btn" style="cursor:pointer;">
+          Load stats.json <input id="fileInput" type="file" accept="application/json" style="display:none;" />
+        </label>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Marketplace Overview</h2>
+        <div class="kpis">
+          <div class="kpi"><div class="label">Total Volume Settled (USDC)</div><div class="value" id="kpiVolume">–</div></div>
+          <div class="kpi"><div class="label">Jobs Completed</div><div class="value" id="kpiCompleted">–</div></div>
+          <div class="kpi"><div class="label">Active Providers</div><div class="value" id="kpiProviders">–</div></div>
+          <div class="kpi"><div class="label">Success Rate</div><div class="value" id="kpiSuccess">–</div></div>
+        </div>
+        <div style="margin-top:10px" class="note">
+          Tip: browsers often block <span class="muted">fetch()</span> when opened as <span class="muted">file://</span>. This dashboard works standalone via the “Load stats.json” button.
+          If you serve the folder over HTTP, it will auto-refresh.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Integration CTA</h2>
+        <div class="cta">
+          <a class="btn" href="../../INTEGRATION.md" target="_blank" rel="noreferrer">INTEGRATION.md</a>
+          <a class="btn" id="escrowLink" href="#" target="_blank" rel="noreferrer">Contract (Basescan)</a>
+        </div>
+        <div style="margin-top:10px" class="note">
+          Want to earn USDC as a provider? Run <span class="muted">provider-bot.js</span> and start accepting jobs.
+          Indexer API: <span class="muted">coming soon</span> (this file reads the indexer export).
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Top Providers (Reputation Leaderboard)</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Provider</th>
+                <th>Completed</th>
+                <th>Volume</th>
+                <th>Success Rate</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyProviders"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Recent Transactions</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th>Provider</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Tx</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRecent"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const els = {
+      subline: document.getElementById('subline'),
+      kpiVolume: document.getElementById('kpiVolume'),
+      kpiCompleted: document.getElementById('kpiCompleted'),
+      kpiProviders: document.getElementById('kpiProviders'),
+      kpiSuccess: document.getElementById('kpiSuccess'),
+      tbodyProviders: document.getElementById('tbodyProviders'),
+      tbodyRecent: document.getElementById('tbodyRecent'),
+      escrowLink: document.getElementById('escrowLink'),
+      fileInput: document.getElementById('fileInput'),
+    };
+
+    function pct(x) {
+      if (x === null || x === undefined) return '–';
+      return (x * 100).toFixed(0) + '%';
+    }
+
+    function fmt(n) {
+      if (n === null || n === undefined) return '–';
+      if (typeof n === 'number') {
+        if (Number.isFinite(n) && Math.abs(n) >= 100) return n.toFixed(0);
+        if (Number.isFinite(n)) return n.toFixed(2);
+      }
+      return String(n);
+    }
+
+    function badge(status) {
+      const cls = status;
+      const label = status.toUpperCase();
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function render(data) {
+      const g = data.generated_at || 'unknown';
+      const net = data.network || {};
+      const ov = data.overview || {};
+
+      els.subline.textContent = `chain=${net.chain_id ?? '–'} | escrow=${net.escrow_address ?? '–'} | generated_at=${g}`;
+
+      // KPIs
+      els.kpiVolume.textContent = fmt(ov.volume_settled_usdc);
+      els.kpiCompleted.textContent = fmt(ov.jobs_completed);
+      els.kpiProviders.textContent = fmt(ov.active_providers);
+      els.kpiSuccess.textContent = pct(ov.success_rate);
+
+      // Contract link
+      const escrowUrl = net.escrow_url || '#';
+      els.escrowLink.href = escrowUrl;
+      els.escrowLink.textContent = escrowUrl === '#' ? 'Contract (Basescan)' : 'Contract (Basescan)';
+
+      // Providers
+      const rows = (data.top_providers || []).slice(0, 10).map(p => {
+        const addr = p.provider_short || p.provider;
+        const sr = (p.success_rate === null || p.success_rate === undefined) ? '–' : (p.success_rate * 100).toFixed(0) + '%';
+        return `<tr>
+          <td>${p.rank ?? ''}</td>
+          <td>${addr}</td>
+          <td>${p.completed ?? ''}</td>
+          <td>${fmt(p.volume_usdc)} USDC</td>
+          <td>${sr}</td>
+        </tr>`;
+      }).join('');
+      els.tbodyProviders.innerHTML = rows || `<tr><td colspan="5" class="muted">No data.</td></tr>`;
+
+      // Recent
+      const recent = (data.recent_jobs || []).slice(0, 15).map(j => {
+        const tx = j.tx_url ? `<a href="${j.tx_url}" target="_blank" rel="noreferrer">tx</a>` : '–';
+        return `<tr>
+          <td>${j.job_short || ''}</td>
+          <td>${j.provider_short || ''}</td>
+          <td>${fmt(j.amount_usdc)} USDC</td>
+          <td>${badge(j.status || 'pending')}</td>
+          <td>${tx}</td>
+        </tr>`;
+      }).join('');
+      els.tbodyRecent.innerHTML = recent || `<tr><td colspan="5" class="muted">No data.</td></tr>`;
+    }
+
+    async function tryFetch() {
+      // Works when served via http(s). Often blocked under file://.
+      const res = await fetch('../indexer/stats.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error('fetch failed: ' + res.status);
+      return await res.json();
+    }
+
+    // Embedded fallback (sample data). Overwritten if fetch/file-load succeeds.
+    const SAMPLE = {
+      generated_at: 'sample',
+      network: {
+        name: 'baseSepolia',
+        chain_id: 84532,
+        explorer: 'https://sepolia.basescan.org',
+        escrow_address: '0xDEMO000000000000000000000000000000000000',
+        escrow_url: 'https://sepolia.basescan.org/address/0xDEMO000000000000000000000000000000000000',
+        usdc_decimals: 6,
+      },
+      overview: {
+        jobs_total: 20,
+        jobs_completed: 47,
+        jobs_refunded: 3,
+        active_providers: 12,
+        volume_settled_usdc: 235,
+        success_rate: 0.94,
+      },
+      top_providers: [
+        { rank: 1, provider: '0xABC0000000000000000000000000000000000000', provider_short: '0xABC0…0000', completed: 23, volume_usdc: 115, success_rate: 1 },
+        { rank: 2, provider: '0xDEF0000000000000000000000000000000000000', provider_short: '0xDEF0…0000', completed: 18, volume_usdc: 90, success_rate: 0.95 },
+        { rank: 3, provider: '0x1230000000000000000000000000000000000000', provider_short: '0x1230…0000', completed: 6, volume_usdc: 30, success_rate: 0.85 },
+      ],
+      recent_jobs: [
+        { job_short: '0x7a3…', provider_short: '0xABC0…0000', amount_usdc: 5, status: 'released', tx_url: 'https://sepolia.basescan.org/tx/0xTX0' },
+        { job_short: '0x9f1…', provider_short: '0xDEF0…0000', amount_usdc: 10, status: 'released', tx_url: 'https://sepolia.basescan.org/tx/0xTX1' },
+        { job_short: '0x2e4…', provider_short: '0x1230…0000', amount_usdc: 5, status: 'pending', tx_url: null },
+      ],
+    };
+
+    function attachFileLoader() {
+      els.fileInput.addEventListener('change', async (ev) => {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) return;
+        try {
+          const text = await f.text();
+          const data = JSON.parse(text);
+          render(data);
+        } catch (e) {
+          alert('Failed to load JSON: ' + e);
+        }
+      });
+    }
+
+    async function boot() {
+      attachFileLoader();
+      render(SAMPLE);
+
+      // Try auto-fetch; if it works, poll.
+      try {
+        const data = await tryFetch();
+        render(data);
+        setInterval(async () => {
+          try {
+            const d = await tryFetch();
+            render(d);
+          } catch (_) {}
+        }, 30_000);
+      } catch (_) {
+        // File mode: user can click Load.
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>

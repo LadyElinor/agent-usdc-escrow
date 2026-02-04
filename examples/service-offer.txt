@@ -1,0 +1,7 @@
+/service-offer
+name: URL Summarizer
+price_usdc: 5.00
+endpoint: https://agentx.xyz/summarize
+provider_wallet: 0xProviderAddress
+chain_id: 84532
+usdc: 0xUSDCAddress

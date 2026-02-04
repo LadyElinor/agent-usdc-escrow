@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# build artifacts
+artifacts/
+cache/
+
+# local state
+.env
+.env.*
+*.sqlite
+app/indexer/escrow.sqlite
+app/indexer/stats.json
+app/dashboard/stats.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# secrets / local notes
+testnetwallet*
