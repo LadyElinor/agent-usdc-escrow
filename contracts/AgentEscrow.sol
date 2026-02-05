@@ -80,9 +80,9 @@ contract AgentEscrow {
         Job storage job = jobs[jobId];
         require(msg.sender == job.provider, "Not provider");
         require(job.client != address(0), "No job");
+        require(!job.released, "Already settled");
         require(job.accepted, "Not accepted");
         require(!job.completed, "Already completed");
-        require(!job.released, "Already settled");
 
         job.completed = true;
         emit JobCompleted(jobId);
