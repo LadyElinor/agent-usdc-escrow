@@ -45,6 +45,7 @@ contract AgentEscrow {
         require(jobs[jobId].client == address(0), "Job exists");
         require(provider != address(0), "Invalid provider");
         require(amount > 0, "Invalid amount");
+        require(duration > 0, "Invalid duration");
 
         uint256 deadline = block.timestamp + duration;
 

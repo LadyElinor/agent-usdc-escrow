@@ -1,0 +1,4 @@
+Base Sepolia ESCROW_ADDRESS="0x816EbE0269fb04A57e3941BF53cE14efb2f0c6A1"
+USDC_ADDRESS="0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+EXPLORER="https://sepolia.basescan.org"
+RPC_URL="https://sepolia.base.org"

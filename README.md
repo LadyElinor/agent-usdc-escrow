@@ -15,8 +15,8 @@ A **client bot** escrows USDC for a job; a **provider bot** explicitly **accepts
 - USDC (Base Sepolia): `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
 
 ## Deployed contract
-- AgentEscrow: `0x71763e9007d6eeF9F9451BE62281712DD6Ef8657`
-- Explorer: https://sepolia.basescan.org/address/0x71763e9007d6eeF9F9451BE62281712DD6Ef8657
+- See `BSEscrow.md` (single source of truth for Base Sepolia addresses).
+- Explorer: run `type BSEscrow.md` to copy the current address, or open BaseScan and paste the address.
 
 ## Proof (sample transactions)
 - createJob (escrow 5 USDC): https://sepolia.basescan.org/tx/0x2cbf49b277e14d13040b91d9b6ffb45129ddbee0d291b03e7cb62083f6cefaec (block 37205734)
@@ -45,10 +45,11 @@ npm.cmd run deploy:base
 ```
 
 ## Run demo
-In PowerShell:
+In PowerShell (recommended: load env from `BSEscrow.md`):
 ```powershell
-$env:RPC_URL="https://sepolia.base.org"
-$env:ESCROW_ADDRESS="0x71763e9007d6eeF9F9451BE62281712DD6Ef8657"
+Set-ExecutionPolicy -Scope Process Bypass
+. .\scripts\set-base-sepolia-env.ps1
+
 $env:CLIENT_PRIVATE_KEY="0x..."     # DO NOT COMMIT
 $env:PROVIDER_PRIVATE_KEY="0x..."   # DO NOT COMMIT
 $env:PROVIDER_ADDRESS="0x..."
@@ -58,8 +59,9 @@ powershell -ExecutionPolicy Bypass -File scripts/run-demo.ps1
 
 ## Export stats + dashboard
 ```powershell
-$env:ESCROW_ADDRESS="0x71763e9007d6eeF9F9451BE62281712DD6Ef8657"
-$env:EXPLORER="https://sepolia.basescan.org"
+Set-ExecutionPolicy -Scope Process Bypass
+. .\scripts\set-base-sepolia-env.ps1
+
 npm.cmd run export:stats
 ```
 
